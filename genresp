@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+
+from datetime import datetime, timezone
+from hashlib import md5
+from json import dumps
+from sys import argv, exit
+from os.path import getsize
+
+SCRIPT_FILENAME = str(argv[0]).split('/')[-1]
+STATUS = 'UNOFFICIAL'
+
+del argv[0]
+
+try:
+    YYMMDD = argv[0]
+
+except IndexError:
+    exit(f'Usage: {SCRIPT_FILENAME} YYYY/MMMM/DDDD (required) BUILD_TYPE (vanilla or gms, required) STATUS (OFFICIAL or UNOFFICIAL, optional)')
+
+
+try:
+    BUILD_TYPE = argv[1]
+
+    if BUILD_TYPE not in ('vanilla', 'gms'):
+        exit(f'Invalid build type "{BUILD_TYPE}"')
+
+except IndexError:
+    exit('Build type not defined')
+
+try:
+    if argv[2] == 'OFFICIAL':
+        STATUS = 'OFFICIAL'
+
+except IndexError:
+    pass
+
+FILENAME = f'lineage-18.1-{YYMMDD}-{STATUS}-laurel_sprout-{BUILD_TYPE}.zip'
+BUILD_TIME = int(datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp())
+
+json_dict = {}
+json_dict['response'] = []
+
+ota_dict = {}
+
+ota_dict['datetime'] = BUILD_TIME
+ota_dict['filename'] = FILENAME
+
+try:
+    ota_dict['id'] = md5(open(FILENAME, 'rb').read()).hexdigest()
+
+except FileNotFoundError:
+    exit(f'File "{FILENAME}" does not exist. Are you in the correct directory?')
+
+ota_dict['romtype'] = STATUS
+ota_dict['size'] = getsize(FILENAME)
+ota_dict['url'] = f'https://gstream.ga/0:/Others/Mi%20A3/Rom/LineageOS/Skyblueborb/{FILENAME}'
+ota_dict['version'] = '18.1'
+
+json_dict['response'].append(ota_dict)
+
+if BUILD_TYPE == 'vanilla':
+    with open('laurel_sprout.json', 'w') as file:
+        file.write(dumps(json_dict, indent=4))
+
+else:
+    with open('laurel_sprout-gms.json', 'w') as file:
+        file.write(dumps(json_dict, indent=4))
