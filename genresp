@@ -53,15 +53,15 @@ except FileNotFoundError:
 
 ota_dict['romtype'] = STATUS
 ota_dict['size'] = getsize(FILENAME)
-ota_dict['url'] = f'https://gstream.ga/0:/Others/Mi%20A3/Rom/LineageOS/Skyblueborb/{FILENAME}'
+ota_dict['url'] = f'https://thebiggestboi.skyblueborb.workers.dev/0:/{FILENAME}'
 ota_dict['version'] = '18.1'
 
 json_dict['response'].append(ota_dict)
 
 if BUILD_TYPE == 'vanilla':
-    with open('laurel_sprout.json', 'w') as file:
+    with open('lineage-18.1-oss.json', 'w') as file:
         file.write(dumps(json_dict, indent=4))
 
 else:
-    with open('laurel_sprout-gms.json', 'w') as file:
+    with open('lineage-18.1-oss-gms.json', 'w') as file:
         file.write(dumps(json_dict, indent=4))
