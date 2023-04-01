@@ -3,39 +3,14 @@
 from datetime import datetime, timezone
 from hashlib import md5
 from json import dumps
+from glob import glob
 
 import sys
 import os
 
-STATUS = "UNOFFICIAL"
-
-try:
-    YYMMDD = sys.argv[1]
-
-except IndexError:
-    sys.exit(
-        f"Usage: {sys.argv[0]} YYYY/MMMM/DDDD (required) BUILD_TYPE "
-        "(vanilla or gms, required) STATUS (OFFICIAL or UNOFFICIAL, optional)"
-    )
-
-
-try:
-    BUILD_TYPE = sys.argv[2]
-
-    if BUILD_TYPE not in ("vanilla", "gms"):
-        sys.exit(f'Invalid build type "{BUILD_TYPE}"')
-
-except IndexError:
-    sys.exit("Build type not defined")
-
-try:
-    if sys.argv[3] == "OFFICIAL":
-        STATUS = "OFFICIAL"
-
-except IndexError:
-    pass
-
-FILENAME = f"lineage-18.1-{YYMMDD}-{STATUS}-laurel_sprout-{BUILD_TYPE}.zip"
+FILENAME = glob("lineage-*")[0]
+STATUS = FILENAME.split("-")[3]
+VERSION = FILENAME.split("-")[1]
 BUILD_TIME = int(datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp())
 
 json_dict = {}
@@ -46,24 +21,20 @@ ota_dict = {}
 ota_dict["datetime"] = BUILD_TIME
 ota_dict["filename"] = FILENAME
 
-try:
-    with open(FILENAME, "rb") as ROM_FILE:
-        ota_dict["id"] = md5(ROM_FILE.read()).hexdigest()
-
-except FileNotFoundError:
-    sys.exit(f'File "{FILENAME}" does not exist. Are you in the correct directory?')
+with open(FILENAME, "rb") as ROM_FILE:
+    ota_dict["id"] = md5(ROM_FILE.read()).hexdigest()
 
 ota_dict["romtype"] = STATUS
 ota_dict["size"] = os.path.getsize(FILENAME)
 ota_dict["url"] = f"https://thebiggestboi.skyblueborb.workers.dev/0:/{FILENAME}"
-ota_dict["version"] = FILENAME.split("-")[1]
+ota_dict["version"] = VERSION
 
 json_dict["response"].append(ota_dict)
 
-if BUILD_TYPE == "vanilla":
-    with open("lineage-18.1-oss.json", "w", encoding="utf-8") as file:
+if "vanilla" in FILENAME:
+    with open(f"lineage-{VERSION}-oss.json", "w", encoding="utf-8") as file:
         file.write(dumps(json_dict, indent=4))
 
 else:
-    with open("lineage-18.1-oss-gms.json", "w", encoding="utf-8") as file:
+    with open(f"lineage-{VERSION}-oss-gms.json", "w", encoding="utf-8") as file:
         file.write(dumps(json_dict, indent=4))
