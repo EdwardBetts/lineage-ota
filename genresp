@@ -56,7 +56,7 @@ except FileNotFoundError:
 ota_dict["romtype"] = STATUS
 ota_dict["size"] = os.path.getsize(FILENAME)
 ota_dict["url"] = f"https://thebiggestboi.skyblueborb.workers.dev/0:/{FILENAME}"
-ota_dict["version"] = "18.1"
+ota_dict["version"] = FILENAME.split("-")[1]
 
 json_dict["response"].append(ota_dict)
 
