@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from hashlib import md5
 from json import dumps
 from glob import glob
+import json
 
 import os
 
@@ -29,6 +30,8 @@ ota_dict["url"] = f"https://thebiggestboi.skyblueborb.workers.dev/0:/{FILENAME}"
 ota_dict["version"] = VERSION
 
 json_dict["response"].append(ota_dict)
+
+print(json_dict)
 
 if "vanilla" in FILENAME:
     with open(f"lineage-{VERSION}-oss.json", "w", encoding="utf-8") as file:
