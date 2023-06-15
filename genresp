@@ -2,9 +2,9 @@
 
 from datetime import datetime, timezone
 from hashlib import md5
+from pprint import pprint
 from json import dumps
 from glob import glob
-import json
 
 import os
 
@@ -31,8 +31,6 @@ ota_dict["version"] = VERSION
 
 json_dict["response"].append(ota_dict)
 
-print(json_dict)
-
 if "vanilla" in FILENAME:
     with open(f"lineage-{VERSION}-oss.json", "w", encoding="utf-8") as file:
         file.write(dumps(json_dict, indent=4))
@@ -40,3 +38,5 @@ if "vanilla" in FILENAME:
 else:
     with open(f"lineage-{VERSION}-oss-gms.json", "w", encoding="utf-8") as file:
         file.write(dumps(json_dict, indent=4))
+
+pprint(json_dict)
